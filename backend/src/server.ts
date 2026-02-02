@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import NodeCache from 'node-cache';
 import morgan from 'morgan';
 import winston from 'winston';
+import db from './db/index.js';
 
 // Initialize App
 const app = express();
@@ -62,6 +63,22 @@ app.use(limiter);
 app.get('/', (req: Request, res: Response) => {
   logger.info('Root route accessed');
   res.send('Backend is running securely!');
+});
+
+app.get('/health', async (req: Request, res: Response) => {
+    try {
+        // Simple query to verify DB connection
+        const dbTime = await db.query('SELECT NOW()');
+        res.json({ 
+            status: 'ok', 
+            message: 'Server and Database are healthy', 
+            timestamp: new Date(),
+            dbTime: dbTime.rows[0].now 
+        });
+    } catch (error) {
+        logger.error('Health check failed', error);
+        res.status(500).json({ status: 'error', message: 'Database connection failed' });
+    }
 });
 
 // Start Server
