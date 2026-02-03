@@ -11,6 +11,7 @@ import db from './db/index.js';
 
 import summaryRouter from "./routers/summary.js";
 import driversRouter from "./routers/drivers.js";
+import riskFactorsRouter from "./routers/risk-factors.js";
 
 // Initialize App
 const app = express();
@@ -69,6 +70,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api', summaryRouter);
 app.use('/api', driversRouter);
+app.use('/api', riskFactorsRouter);
 
 
 // Routes
