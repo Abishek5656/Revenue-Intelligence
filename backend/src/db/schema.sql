@@ -18,7 +18,7 @@ CREATE TABLE accounts (
     account_id VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     industry VARCHAR(100),
-    segment VARCHAR(50)
+    segment INTEGER -- 1: SMB, 2: Mid-Market, 3: Enterprise
 );
 
 -- 3. Monthly Targets Table
@@ -34,7 +34,7 @@ CREATE TABLE deals (
     deal_id VARCHAR(50) UNIQUE NOT NULL,
     account_id VARCHAR(50) REFERENCES accounts(account_id) ON DELETE SET NULL,
     rep_id VARCHAR(50) REFERENCES reps(rep_id) ON DELETE SET NULL,
-    stage VARCHAR(50) NOT NULL,
+    stage INTEGER NOT NULL, -- 1: Closed Won, 2: Closed Lost, 3: Prospecting, 4: Negotiation
     amount NUMERIC(15, 2),
     created_at DATE NOT NULL,
     closed_at DATE

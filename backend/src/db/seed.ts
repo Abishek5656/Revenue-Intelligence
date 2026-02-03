@@ -43,14 +43,31 @@ const seed = async () => {
             }
         });
 
+        // Mappings
+        const segmentMap: Record<string, number> = {
+            'SMB': 1,
+            'Mid-Market': 2,
+            'Enterprise': 3
+        };
+
+        const stageMap: Record<string, number> = {
+            'Closed Won': 1,
+            'Closed Lost': 2,
+            'Prospecting': 3,
+            'Negotiation': 4
+        };
+
         // 2. Accounts
         console.log(`Seeding ${accountsData.length} accounts...`);
         await processBatch(accountsData, async (row: any) => {
             const id = clean(row.account_id);
+            const segmentStr = clean(row.segment);
+            const segmentId = segmentMap[segmentStr] || null; // Handle unmapped as null or default
+
             if (id) {
                 await query(
                     'INSERT INTO accounts (account_id, name, industry, segment) VALUES ($1, $2, $3, $4) ON CONFLICT (account_id) DO NOTHING',
-                    [id, clean(row.name), clean(row.industry), clean(row.segment)]
+                    [id, clean(row.name), clean(row.industry), segmentId]
                 );
             }
         });
@@ -73,13 +90,15 @@ const seed = async () => {
             const id = clean(row.deal_id);
             const accountId = clean(row.account_id);
             const repId = clean(row.rep_id);
+            const stageStr = clean(row.stage);
+            const stageId = stageMap[stageStr] || 3; // Default to Prospecting (3) if unknown
             
             if (id) {
                 await query(
                     `INSERT INTO deals (deal_id, account_id, rep_id, stage, amount, created_at, closed_at) 
                      VALUES ($1, $2, $3, $4, $5, ($6)::date, ($7)::date) 
                      ON CONFLICT (deal_id) DO NOTHING`,
-                    [id, accountId, repId, clean(row.stage), row.amount, row.created_at, row.closed_at]
+                    [id, accountId, repId, stageId, row.amount, row.created_at, row.closed_at]
                 );
             }
         });
