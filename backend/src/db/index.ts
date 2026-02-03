@@ -23,7 +23,7 @@ if (!connectionString) {
   process.exit(1);
 }
 
-const pool = new Pool({
+export const pool = new Pool({
   connectionString,
   ssl: {
       rejectUnauthorized: false

@@ -57,7 +57,9 @@ const limiter = rateLimit({
 });
 
 // Apply rate limiting to all requests
+// Apply rate limiting to all requests
 app.use(limiter);
+
 
 // Routes
 app.get('/', (req: Request, res: Response) => {
