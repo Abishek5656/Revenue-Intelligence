@@ -10,6 +10,7 @@ import db from './db/index.js';
 
 
 import summaryRouter from "./routers/summary.js";
+import driversRouter from "./routers/drivers.js";
 
 // Initialize App
 const app = express();
@@ -59,8 +60,15 @@ const limiter = rateLimit({
 // Apply rate limiting to all requests
 app.use(limiter);
 
+// Log each request
+app.use((req, res, next) => {
+    logger.info(`Received request: ${req.method} ${req.url}`);
+    next();
+});
+
 // Routes
 app.use('/api', summaryRouter);
+app.use('/api', driversRouter);
 
 
 // Routes
