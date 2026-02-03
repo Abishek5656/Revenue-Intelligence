@@ -8,6 +8,9 @@ import morgan from 'morgan';
 import winston from 'winston';
 import db from './db/index.js';
 
+
+import summaryRouter from "./routers/summary.js";
+
 // Initialize App
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,15 +29,12 @@ const logger = winston.createLogger({
   format: winston.format.json(),
   defaultMeta: { service: 'user-service' },
   transports: [
-    // - Write all logs with importance level of `error` or less to `error.log`
-    // - Write all logs with importance level of `info` or less to `combined.log`
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
     new winston.transports.File({ filename: 'combined.log' }),
   ],
 });
 
-// If we're not in production then log to the `console` with the format:
-// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+
 if (process.env.NODE_ENV !== 'production') {
   logger.add(new winston.transports.Console({
     format: winston.format.simple(),
@@ -51,36 +51,22 @@ app.use(morgan('dev')); // HTTP request logger
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
 	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+	standardHeaders: true,
+	legacyHeaders: false,
     message: 'Too many requests from this IP, please try again after 15 minutes',
 });
 
 // Apply rate limiting to all requests
-// Apply rate limiting to all requests
 app.use(limiter);
+
+// Routes
+app.use('/api', summaryRouter);
 
 
 // Routes
 app.get('/', (req: Request, res: Response) => {
   logger.info('Root route accessed');
   res.send('Backend is running securely!');
-});
-
-app.get('/health', async (req: Request, res: Response) => {
-    try {
-        // Simple query to verify DB connection
-        const dbTime = await db.query('SELECT NOW()');
-        res.json({ 
-            status: 'ok', 
-            message: 'Server and Database are healthy', 
-            timestamp: new Date(),
-            dbTime: dbTime.rows[0].now 
-        });
-    } catch (error) {
-        logger.error('Health check failed', error);
-        res.status(500).json({ status: 'error', message: 'Database connection failed' });
-    }
 });
 
 // Start Server
