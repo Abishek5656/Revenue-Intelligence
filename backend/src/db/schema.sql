@@ -48,3 +48,7 @@ CREATE TABLE activities (
     type VARCHAR(50) NOT NULL,
     timestamp TIMESTAMP NOT NULL
 );
+
+-- Indexes for Performance
+CREATE INDEX idx_monthly_targets_month ON monthly_targets(month);
+CREATE INDEX idx_deals_closed_at ON deals(closed_at);
