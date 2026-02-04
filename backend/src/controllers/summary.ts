@@ -90,3 +90,50 @@ export const summaryController = async (req: Request, res: Response): Promise<vo
         });
     }
 };
+
+export const trendController = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const cacheKey = 'revenue_trend_6months';
+        const cachedData = summaryCache.get(cacheKey);
+        
+        if (cachedData) {
+             console.log('Serving revenue trend from CACHE');
+             res.json({ success: true, data: cachedData });
+             return;
+        }
+
+        // Query for last 6 months revenue grouped by month
+        // Using Postgres date functions
+        const trendQuery = `
+            SELECT 
+                TO_CHAR(closed_at, 'Mon') as month,
+                EXTRACT(MONTH FROM closed_at) as month_num,
+                EXTRACT(YEAR FROM closed_at) as year_num,
+                SUM(amount) as revenue
+            FROM deals
+            WHERE stage = 1 
+            AND closed_at >= NOW() - INTERVAL '6 months'
+            GROUP BY 1, 2, 3
+            ORDER BY year_num ASC, month_num ASC
+        `;
+
+        const result = await query(trendQuery);
+
+        const data = result.rows.map(row => ({
+            month: row.month,
+            revenue: Number(row.revenue)
+        }));
+
+        summaryCache.set(cacheKey, data);
+        console.log('Serving revenue trend from DB');
+
+        res.json({
+            success: true,
+            data
+        });
+
+    } catch (error) {
+        console.error('Error fetching trend:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
