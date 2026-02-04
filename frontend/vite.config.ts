@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://revenue-intelligence.onrender.com',
+        target: 'https://revenue-intelligence.onrender.com/api',
         changeOrigin: true,
       },
     },

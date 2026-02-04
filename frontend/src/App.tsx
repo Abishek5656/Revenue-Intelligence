@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import  { Suspense, lazy } from 'react';
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import Loading from './components/Loading';
 

@@ -34,7 +34,7 @@ const Sparkline: React.FC<SparklineProps> = ({ color, trend }) => {
     const y = d3.scaleLinear().domain([0, 15]).range([height - margin, margin]); // approx range
 
     const line = d3.line<number>()
-        .x((d, i) => x(i))
+        .x((_, i) => x(i))
         .y(d => y(d))
         .curve(d3.curveBasis); // Smooth curve
 

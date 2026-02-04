@@ -1,4 +1,4 @@
-const API_BASE = '';
+const API_BASE = 'https://revenue-intelligence.onrender.com/api';
 
 export interface SummaryData {
   quarterlyTarget: number;
