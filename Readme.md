@@ -1,4 +1,4 @@
-# SkyGeni Revenue Intelligence Dashboard
+# Revenue Intelligence Dashboard
 
 A comprehensive dashboard for visualizing sales performance, revenue trends, and actionable insights. Built with a modern tech stack focusing on performance, scalability, and premium UX.
 
